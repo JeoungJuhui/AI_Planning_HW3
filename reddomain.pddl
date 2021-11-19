@@ -18,11 +18,10 @@
         (have ?person ?obj)    ; ?person has ?obj
         (at ?person ?loc)      ; ?person is at ?loc
         (connect ?loc1 ?loc2)
-        (meet ?pc1 ?pc2)
         (predator ?person)
         (state ?pc ?state)
         (know ?person ?info)
-        (predator-alive)
+        (in ?obj1 ?obj2)
     )
     
     ; Define a transition to move a person from one place to another
@@ -69,7 +68,7 @@
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
           (predator ?person1)
-          (not(state ?person1 full))
+          (not(in ?person1 ?person2))
           (not(= ?person1 ?person2))
           (at ?person1 ?loc)
           (at ?person2 ?loc)
@@ -77,18 +76,22 @@
         ; Only conjunction or atomic effects are supported
         :effect (and
           ; Note that adding the new relations is not enough
+          (in ?person1 ?person2)
           (state ?person1 full)
-          (state ?person2 eaten)
         )
     )  
     ; Other transitions can be defined here
     
+    
     ; Define an action to give an object from one person to another person
     (:action sleep
-        :parameters (?person ?loc)
+        :parameters (?person ?person2 ?person3)
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
-          (at ?person ?loc)
+          (predator ?person)
+          (in ?person ?person2)
+          (in ?person ?person3)
+          (not(=?person2 ?person3))
           (state ?person full)
         )
         ; Only conjunction or atomic effects are supported
@@ -109,46 +112,46 @@
           (predator ?person1)
           (have ?person2 ?weapon)
           (not(= ?person1 ?person2))
-          (not(state ?person2 eaten))
+          (not(in ?person1 ?person2))
         )
         ; Only conjunction or atomic effects are supported
         :effect (and
           ; Note that adding the new relations is not enough
-          (state ?person1 die)
-          (not(predator-alive))
-
+          (not(predator ?person1))
         )
     )  
     ; Other transitions can be defined here
     
     (:action save
-        :parameters (?person1 ?person2 ?loc)
+        :parameters (?person1 ?person2 ?person3 ?loc ?weapon)
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
           (at ?person1 ?loc)
           (at ?person2 ?loc)
-          (state ?person2 eaten)
-          (not(predator-alive))
-
+          (at ?person3 ?loc)
           (not(predator ?person1))
+          (in ?person1 ?person2)
           (not(= ?person1 ?person2))
+          (have ?person3 ?weapon)
         )
         ; Only conjunction or atomic effects are supported
         :effect (and
           ; Note that adding the new relations is not enough
-          (state ?person2 alive)
+          (not (in ?person1 ?person2))
         )
     )  
     ; Other transitions can be defined here
     
     (:action tell
-        :parameters (?person1 ?person2 ?loc ?info)
+        :parameters (?person1 ?person2 ?loc ?info ?obj)
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
           (at ?person1 ?loc)
           (at ?person2 ?loc)
-          (have ?person2 basket)
+          (have ?person2 ?obj)
           (not(= ?person1 ?person2))
+          (not(in ?person1 ?person2))
+          (predator ?person1)
         )
         ; Only conjunction or atomic effects are supported
         :effect (and
@@ -159,17 +162,17 @@
     ; Other transitions can be defined here
     
     (:action pick-flowers
-        :parameters (?person1 ?loc ?info)
+        :parameters (?person1 ?info ?obj)
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
-          (at ?person1 ?loc)
           (know ?person1 ?info)
-          (not(have ?person1 ?info))
+          (not(in ?obj ?info))
+          (have ?person1 ?obj)
         )
         ; Only conjunction or atomic effects are supported
         :effect (and
           ; Note that adding the new relations is not enough
-          (have ?person1 ?info)
+          (in ?obj ?info)
         )
     )  
     ; Other transitions can be defined here
