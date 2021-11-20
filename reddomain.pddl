@@ -77,7 +77,6 @@
         :effect (and
           ; Note that adding the new relations is not enough
           (in ?person1 ?person2)
-          (state ?person1 full)
         )
     )  
     ; Other transitions can be defined here
@@ -92,7 +91,6 @@
           (in ?person ?person2)
           (in ?person ?person3)
           (not(=?person2 ?person3))
-          (state ?person full)
         )
         ; Only conjunction or atomic effects are supported
         :effect (and

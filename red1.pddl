@@ -8,7 +8,7 @@
   (:objects red granny wolf hunter
             redhome woods grannyhome
             basket weapon flower 
-            eaten full veryfull die alive sleep
+            sleep
             )
 
   ; The initial state describe what is currently true
@@ -28,10 +28,17 @@
   ; The goal state describe what we desire to achieve
   (:goal (and
 
-    (in basket flower)
     (not(predator wolf))
     (not(in wolf red))
     (not(in wolf granny))
+    (not(in wolf hunter))
+    (in basket flower)
+    (have(hunter weapon))
+    ;(have(granny basket))
+    (at(wolf grannyhome))
+    (at(red grannyhome))
+    (at(hunter grannyhome))
+    (at(granny grannyhome))
 
   ))
 )
