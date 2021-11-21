@@ -6,7 +6,7 @@
 
   ; Objects are candidates to replace free variables
   (:objects red granny wolf hunter
-            redhome woods grannyhome
+            redhome woods grannyhome hut 
             basket weapon flower 
             sleep
             )
@@ -15,11 +15,11 @@
   ; Everything else is considered false
   (:init
     ; Characters are at their initial places
-    (at red redhome) (at granny grannyhome) (at wolf woods) (at hunter woods)
+    (at red redhome) (at granny grannyhome) (at wolf woods) (at hunter hut) (at flower woods)
     
-    (connect redhome woods) (connect woods grannyhome)
+    (connect redhome woods) (connect woods grannyhome) (connect hut grannyhome)
     
-    (predator wolf)
+    (predator wolf) (plant flower) (weapon weapon)
     
     ; Red has a basket
     (have red basket) (have hunter weapon) 
@@ -31,14 +31,10 @@
     (not(predator wolf))
     (not(in wolf red))
     (not(in wolf granny))
-    (not(in wolf hunter))
+    
+    (have granny basket)
     (in basket flower)
-    (have(hunter weapon))
-    ;(have(granny basket))
-    (at(wolf grannyhome))
-    (at(red grannyhome))
-    (at(hunter grannyhome))
-    (at(granny grannyhome))
+    (at flower woods)
 
   ))
 )

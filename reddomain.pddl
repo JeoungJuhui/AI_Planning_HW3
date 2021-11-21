@@ -19,9 +19,12 @@
         (at ?person ?loc)      ; ?person is at ?loc
         (connect ?loc1 ?loc2)
         (predator ?person)
+        (plant ?obj)
+        (weapon ?obj)
         (state ?pc ?state)
         (know ?person ?info)
         (in ?obj1 ?obj2)
+        (meet ?person1 ?person2)
     )
     
     ; Define a transition to move a person from one place to another
@@ -44,12 +47,12 @@
     
     ; Define an action to give an object from one person to another person
     (:action give
-        :parameters (?person1 ?person2 ?loc ?obj)
+        :parameters (?person1 ?person2 ?obj ?obj2)
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
-          (at ?person1 ?loc)
-          (at ?person2 ?loc)
+          (meet ?person1 ?person2)
           (have ?person1 ?obj)
+          (in ?obj ?obj2)
           (not (have ?person2 ?obj)) ; Negative precondition and equality
         )
         ; Only conjunction or atomic effects are supported
@@ -58,25 +61,43 @@
           (have ?person2 ?obj)
           ; Remove the old relations, order is not important
           (not (have ?person1 ?obj))
+          (not (meet ?person1 ?person2))
+
         )
     )  
     ; Other transitions can be defined here
     
-    ; Define an action to give an object from one person to another person
-    (:action eat-alive
+    (:action meet
         :parameters (?person1 ?person2 ?loc)
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
-          (predator ?person1)
-          (not(in ?person1 ?person2))
-          (not(= ?person1 ?person2))
           (at ?person1 ?loc)
           (at ?person2 ?loc)
+          (not(= ?person1 ?person2))
+        )
+        ; Only conjunction or atomic effects are supported
+        :effect (and
+          ; Note that adding the new relations is not enough
+          (meet ?person1 ?person2)
+        )
+    )  
+    
+    ; Define an action to give an object from one person to another person
+    (:action eat-alive
+        :parameters (?person1 ?person2)
+        ; Only conjunction or atomic preconditions are supported
+        :precondition (and
+          (predator ?person1)
+          (meet ?person1 ?person2)
+          (not(plant ?person2))
+          (not(in ?person1 ?person2))
+          (not(= ?person1 ?person2))
         )
         ; Only conjunction or atomic effects are supported
         :effect (and
           ; Note that adding the new relations is not enough
           (in ?person1 ?person2)
+          (not (meet ?person1 ?person2))
         )
     )  
     ; Other transitions can be defined here
@@ -90,7 +111,7 @@
           (predator ?person)
           (in ?person ?person2)
           (in ?person ?person3)
-          (not(=?person2 ?person3))
+          (not(= ?person2 ?person3))
         )
         ; Only conjunction or atomic effects are supported
         :effect (and
@@ -101,14 +122,14 @@
     ; Other transitions can be defined here
     
     (:action kill
-        :parameters (?person1 ?person2 ?loc ?weapon)
+        :parameters (?person1 ?person2 ?obj)
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
-          (at ?person1 ?loc)
-          (at ?person2 ?loc)
+          (meet ?person1 ?person2)
           (state ?person1 sleep)
           (predator ?person1)
-          (have ?person2 ?weapon)
+          (weapon ?obj)
+          (have ?person2 ?obj)
           (not(= ?person1 ?person2))
           (not(in ?person1 ?person2))
         )
@@ -116,20 +137,20 @@
         :effect (and
           ; Note that adding the new relations is not enough
           (not(predator ?person1))
+          (not (meet ?person1 ?person2))
         )
     )  
     ; Other transitions can be defined here
     
     (:action save
-        :parameters (?person1 ?person2 ?person3 ?loc ?weapon)
+        :parameters (?person1 ?person2 ?person3 ?weapon)
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
-          (at ?person1 ?loc)
-          (at ?person2 ?loc)
-          (at ?person3 ?loc)
           (not(predator ?person1))
           (in ?person1 ?person2)
+          (not(in ?person1 ?person3))
           (not(= ?person1 ?person2))
+          (not(= ?person3 ?person2))
           (have ?person3 ?weapon)
         )
         ; Only conjunction or atomic effects are supported
@@ -141,11 +162,10 @@
     ; Other transitions can be defined here
     
     (:action tell
-        :parameters (?person1 ?person2 ?loc ?info ?obj)
+        :parameters (?person1 ?person2 ?info ?obj)
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
-          (at ?person1 ?loc)
-          (at ?person2 ?loc)
+          (meet ?person1 ?person2)
           (have ?person2 ?obj)
           (not(= ?person1 ?person2))
           (not(in ?person1 ?person2))
@@ -155,15 +175,18 @@
         :effect (and
           ; Note that adding the new relations is not enough
           (know ?person2 ?info)
+          (not (meet ?person1 ?person2))
         )
     )  
     ; Other transitions can be defined here
     
     (:action pick-flowers
-        :parameters (?person1 ?info ?obj)
+        :parameters (?person1 ?info ?obj ?loc)
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
           (know ?person1 ?info)
+          (at ?info ?loc)
+          (at ?person1 ?loc)
           (not(in ?obj ?info))
           (have ?person1 ?obj)
         )
