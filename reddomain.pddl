@@ -21,10 +21,12 @@
         (predator ?person)
         (plant ?obj)
         (weapon ?obj)
-        (state ?pc ?state)
+        (sleep ?person)
         (know ?person ?info)
         (in ?obj1 ?obj2)
         (meet ?person1 ?person2)
+        (predator-alive)
+        
     )
     
     ; Define a transition to move a person from one place to another
@@ -51,6 +53,7 @@
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
           (meet ?person1 ?person2)
+          (not(predator-alive))
           (have ?person1 ?obj)
           (in ?obj ?obj2)
           (not (have ?person2 ?obj)) ; Negative precondition and equality
@@ -105,18 +108,18 @@
     
     ; Define an action to give an object from one person to another person
     (:action sleep
-        :parameters (?person ?person2 ?person3)
+        :parameters (?person1 ?person2 ?person3)
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
-          (predator ?person)
-          (in ?person ?person2)
-          (in ?person ?person3)
+          (predator ?person1)
+          (in ?person1 ?person2)
+          (in ?person1 ?person3)
           (not(= ?person2 ?person3))
         )
         ; Only conjunction or atomic effects are supported
         :effect (and
           ; Note that adding the new relations is not enough
-          (state ?person sleep)
+          (sleep ?person1)
         )
     )  
     ; Other transitions can be defined here
@@ -126,7 +129,7 @@
         ; Only conjunction or atomic preconditions are supported
         :precondition (and
           (meet ?person1 ?person2)
-          (state ?person1 sleep)
+          (sleep ?person1)
           (predator ?person1)
           (weapon ?obj)
           (have ?person2 ?obj)
@@ -138,6 +141,7 @@
           ; Note that adding the new relations is not enough
           (not(predator ?person1))
           (not (meet ?person1 ?person2))
+          (not(predator-alive))
         )
     )  
     ; Other transitions can be defined here
@@ -187,7 +191,6 @@
           (know ?person1 ?info)
           (at ?info ?loc)
           (at ?person1 ?loc)
-          (not(in ?obj ?info))
           (have ?person1 ?obj)
         )
         ; Only conjunction or atomic effects are supported
@@ -197,4 +200,5 @@
         )
     )  
     ; Other transitions can be defined here
+    
 )

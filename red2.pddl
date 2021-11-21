@@ -30,6 +30,7 @@
   (:goal (and
 
     (in basket flower)
+    (sleep wolf)
 
   ))
 )

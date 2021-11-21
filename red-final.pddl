@@ -29,7 +29,14 @@
   ; The goal state describe what we desire to achieve
   (:goal (and
 
+    (not(predator wolf))
+    (not(in wolf red))
+    (not(in wolf granny))
+    (not(predator-alive))
+
+    (have granny basket)
     (in basket flower)
+    (at flower woods)
 
   ))
 )
